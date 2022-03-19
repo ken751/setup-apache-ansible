@@ -1,0 +1,24 @@
+# Write a play to deploy apache
+- name: configure apache on Amazon linux instances
+  hosts: ubuntu-clients
+  tasks:
+    - name: Upgrade all packages #yum update -y
+      yum:
+        name: '*'
+        state: latest
+    - name: Install the latest version of Apache #yum install httpd
+      yum:
+        name: httpd
+        state: latest
+    - name: Start service httpd, if not started #systemctl start httpd
+      ansible.builtin.service:
+        name: httpd
+        state: started
+    - name: Enable service httpd, and not touch the state #systemctl start httpd
+      ansible.builtin.service:
+        name: httpd
+        enabled: yes
+    - name: Copy index file from controller to the clients
+      ansible.builtin.copy:
+        src: /home/ec2-user/index.html # on the controller
+        dest: /var/www/html/ # Clients
